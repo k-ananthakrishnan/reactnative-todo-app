@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Week3ShoppingList",
-    "slug": "Week3ShoppingList",
+    "name": "lab01todoapp",
+    "slug": "lab01todoapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
