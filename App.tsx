@@ -1,22 +1,37 @@
-import { useState } from 'react';
-import { FlatList, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { useState, useEffect } from 'react';
+import { FlatList, SafeAreaView, StyleSheet, View } from 'react-native';
 import Header from './src/components/Header';
 import AddItem, { MyItem } from './src/components/AddItem';
 import Item from './src/components/Item';
+import { FIREBASE_DB } from './FirebaseConfig';
+import { collection, onSnapshot, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 
 const App = () => {
   const [tasks, setTasks] = useState<MyItem[]>([]);
 
-  const toggleTaskStatus = (id: number) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task =>
-        task.id === id ? { ...task, status: !task.status } : task
-      )
-    );
+  useEffect(() => {
+    const unsubscribe = onSnapshot(collection(FIREBASE_DB, 'tasks'), (snapshot) => {
+      const tasksArray: MyItem[] = [];
+      snapshot.forEach((doc) => {
+        tasksArray.push({ id: doc.id, title: doc.data().title, status: doc.data().status });
+      });
+      setTasks(tasksArray);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const toggleTaskStatus = async (id: string) => {
+    const taskRef = doc(FIREBASE_DB, 'tasks', id);
+    const task = tasks.find(task => task.id === id);
+    if (task) {
+      await updateDoc(taskRef, { status: !task.status });
+    }
   };
 
-  const deleteTask = (id: number) => {
-    setTasks(prevTasks => prevTasks.filter(task => task.id !== id));
+  const deleteTask = async (id: string) => {
+    const taskRef = doc(FIREBASE_DB, 'tasks', id);
+    await deleteDoc(taskRef);
   };
 
   return (
@@ -27,7 +42,7 @@ const App = () => {
       <AddItem tasks={tasks} setTasks={setTasks} />
       <FlatList
         data={tasks}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <Item 
             task={item} 

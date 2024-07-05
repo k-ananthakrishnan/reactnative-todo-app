@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { collection, addDoc } from 'firebase/firestore';
+import { FIREBASE_DB } from '../../FirebaseConfig';
 
 export interface MyItem {
-  id: number;
+  id: string;
   title: string;
   status: boolean;
 }
@@ -10,15 +12,16 @@ export interface MyItem {
 const AddItem = ({ tasks, setTasks }: { tasks: MyItem[], setTasks: React.Dispatch<React.SetStateAction<MyItem[]>> }) => {
   const [title, setTitle] = useState('');
 
-  const addItem = () => {
+  const addItem = async () => {
     if (!title) {
       Alert.alert('Error', 'Please enter a title');
       return;
     }
-    setTasks(prevTasks => [
-      ...prevTasks,
-      { id: Math.random(), title, status: false }
-    ]);
+    const newTask = {
+      title,
+      status: false,
+    };
+    await addDoc(collection(FIREBASE_DB, 'tasks'), newTask);
     setTitle('');
   };
 

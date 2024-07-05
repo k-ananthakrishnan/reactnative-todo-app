@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Switch } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { MyItem } from './AddItem';
 
-const Item = ({ task, toggleTaskStatus, deleteTask }: { task: MyItem, toggleTaskStatus: (id: number) => void, deleteTask: (id: number) => void }) => {
+const Item = ({ task, toggleTaskStatus, deleteTask }: { task: MyItem, toggleTaskStatus: (id: string) => void, deleteTask: (id: string) => void }) => {
   return (
     <View style={styles.item}>
       <View style={styles.textContainer}>
@@ -19,7 +19,7 @@ const Item = ({ task, toggleTaskStatus, deleteTask }: { task: MyItem, toggleTask
         onValueChange={() => toggleTaskStatus(task.id)}
       />
       <TouchableOpacity onPress={() => deleteTask(task.id)}>
-      <MaterialIcons name="delete-forever" size={24} color="red" />
+        <MaterialIcons name="delete-forever" size={24} color="red" />
       </TouchableOpacity>
     </View>
   );
